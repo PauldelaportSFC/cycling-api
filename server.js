@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
 // ---- FITNESS ----
 app.get("/fitness", async (req, res) => {
   try {
-    const url = `/athlete/${process.env.ATHLETE_ID}/fitness`;
+    const url = `/athlete/${process.env.ATHLETE_ID}/wellness`;
     console.log("Calling Intervals API:", url);
 
     const response = await api.get(url);
@@ -40,13 +40,13 @@ app.get("/fitness", async (req, res) => {
 
     const latest = data[data.length - 1];
 
-    res.json({
-      ftp: latest.ftp,
-      ctl: latest.ctl,
-      atl: latest.atl,
-      tsb: latest.tsb,
-      vo2max: latest.vo2max
-    });
+	res.json({
+  	date: latest.date,
+  	resting_hr: latest.resting_hr,
+  	weight: latest.weight,
+  	sleep: latest.sleep,
+  	notes: latest.notes
+	});
 
   } catch (error) {
     console.error("Intervals error:", error.response?.data || error.message);
