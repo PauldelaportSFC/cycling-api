@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
 app.get("/fitness", async (req, res) => {
   try {
     const response = await api.get(
-      `/athlete/${process.env.ATHLETE_ID}/activities`
+      `/athlete/${process.env.ATHLETE_ID}/activities?oldest=2025-01-01`
     );
 
     const activities = response.data;
@@ -74,7 +74,7 @@ app.get("/fitness", async (req, res) => {
 app.get("/workouts", async (req, res) => {
   try {
     const response = await api.get(
-      `/athlete/${process.env.ATHLETE_ID}/activities`
+     `/athlete/${process.env.ATHLETE_ID}/activities?oldest=2025-01-01`
     );
 
     const workouts = response.data.slice(0, 5);
