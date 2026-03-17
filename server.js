@@ -43,22 +43,31 @@ console.log("🔥 RAW ACTIVITIES LENGTH:", activities.length);
     const recent = activities.slice(0, 7);
 
     const avgTSS =
-  	recent.reduce((sum, a) => sum + (a.tss || a.training_stress_score || 0), 0) /
-  	recent.length;
+      recent.reduce((sum, a) => sum + (a.icu_training_load || 0), 0) /
+      recent.length;
 
     const avgPower =
-  	recent.reduce((sum, a) => sum + (a.avg_power || a.average_watts || 0), 0) /
-  	recent.length;
+      recent.reduce((sum, a) => sum + (a.icu_average_watts || 0), 0) /
+      recent.length;
 
     const totalTime =
       recent.reduce((sum, a) => sum + (a.moving_time || 0), 0);
+
+    const latest = recent[0];
+
+    const ctl = latest.icu_ctl;
+    const atl = latest.icu_atl;
+    const tsb = ctl - atl;	
 
     res.json({
       recent_rides: recent.length,
       avg_tss: Math.round(avgTSS),
       avg_power: Math.round(avgPower),
       total_time_seconds: totalTime,
-      last_ride: recent[0]?.start_date_local || null
+      last_ride: latest.start_date_local,
+      ctl: Math.round(ctl),
+      atl: Math.round(atl),
+      tsb: Math.round(tsb)  
     });
 
   } catch (error) {
