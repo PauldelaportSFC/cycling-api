@@ -40,12 +40,12 @@ app.get("/fitness", async (req, res) => {
     const recent = activities.slice(0, 7);
 
     const avgTSS =
-      recent.reduce((sum, a) => sum + (a.training_stress_score || 0), 0) /
-      recent.length;
+  	recent.reduce((sum, a) => sum + (a.tss || a.training_stress_score || 0), 0) /
+  	recent.length;
 
     const avgPower =
-      recent.reduce((sum, a) => sum + (a.average_watts || 0), 0) /
-      recent.length;
+  	recent.reduce((sum, a) => sum + (a.avg_power || a.average_watts || 0), 0) /
+  	recent.length;
 
     const totalTime =
       recent.reduce((sum, a) => sum + (a.moving_time || 0), 0);
