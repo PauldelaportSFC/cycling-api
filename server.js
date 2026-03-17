@@ -17,12 +17,20 @@ const api = axios.create({
   }
 });
 
-// ---- FITNESS ENDPOINT ----
+// ---- ROOT ----
+app.get("/", (req, res) => {
+  res.send("Cycling API running");
+});
+
+// ---- FITNESS ----
 app.get("/fitness", async (req, res) => {
   try {
-    const response = await api.get(
-      `/athlete/${process.env.ATHLETE_ID}/fitness`
-    );
+    const url = `/athlete/${process.env.ATHLETE_ID}/fitness`;
+    console.log("Calling Intervals API:", url);
+
+    const response = await api.get(url);
+
+    console.log("Intervals response:", response.data);
 
     const data = response.data;
 
@@ -41,14 +49,16 @@ app.get("/fitness", async (req, res) => {
     });
 
   } catch (error) {
+    console.error("Intervals error:", error.response?.data || error.message);
+
     res.status(500).json({
       error: "Failed to fetch fitness data",
-      details: error.message
+      details: error.response?.data || error.message
     });
   }
 });
 
-// ---- WORKOUTS ENDPOINT ----
+// ---- WORKOUTS ----
 app.get("/workouts", async (req, res) => {
   try {
     const response = await api.get(
@@ -69,16 +79,13 @@ app.get("/workouts", async (req, res) => {
     res.json(formatted);
 
   } catch (error) {
+    console.error("Workout error:", error.response?.data || error.message);
+
     res.status(500).json({
       error: "Failed to fetch workouts",
-      details: error.message
+      details: error.response?.data || error.message
     });
   }
-});
-
-// ---- ROOT ----
-app.get("/", (req, res) => {
-  res.send("Cycling API running");
 });
 
 // ---- START SERVER ----
