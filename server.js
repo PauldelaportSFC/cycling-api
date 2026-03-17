@@ -14,9 +14,8 @@ const PORT = process.env.PORT || 3000;
 const api = axios.create({
   baseURL: "https://intervals.icu/api/v1",
   auth: {
-  	username: process.env.INTERVALS_USERNAME,
-	password: process.env.INTERVALS_API_KEY
-
+    username: "API_KEY", // REQUIRED literal string
+    password: process.env.INTERVALS_API_KEY
   }
 });
 
@@ -38,10 +37,8 @@ app.get("/fitness", async (req, res) => {
       return res.status(404).json({ error: "No activity data found" });
     }
 
-    // Take last 7 rides
     const recent = activities.slice(0, 7);
 
-    // Calculate metrics
     const avgTSS =
       recent.reduce((sum, a) => sum + (a.training_stress_score || 0), 0) /
       recent.length;
@@ -75,10 +72,16 @@ app.get("/fitness", async (req, res) => {
 app.get("/workouts", async (req, res) => {
   try {
     const response = await api.get(
-     `/athlete/${process.env.ATHLETE_ID}/activities?oldest=2025-01-01`
+      `/athlete/${process.env.ATHLETE_ID}/activities?oldest=2025-01-01`
     );
 
-    const workouts = response.data.slice(0, 5);
+    const data = response.data;
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ error: "No workout data found" });
+    }
+
+    const workouts = data.slice(0, 5);
 
     const formatted = workouts.map(w => ({
       date: w.start_date_local,
