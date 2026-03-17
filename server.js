@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 const api = axios.create({
   baseURL: "https://intervals.icu/api/v1",
   auth: {
-  	username: process.env.INTERVALS_USERNAME
+  	username: process.env.INTERVALS_USERNAME,
 	password: process.env.INTERVALS_API_KEY
 
   }
