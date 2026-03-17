@@ -32,7 +32,10 @@ app.get("/fitness", async (req, res) => {
     );
 
     const activities = response.data;
-
+    console.log("🔥 RAW ACTIVITIES LENGTH:", activities.length);
+console.log("🔥 RAW ACTIVITIES LENGTH:", activities.length);
+    console.log("FIRST ACTIVITY:", activities[0]);
+    
     if (!activities || activities.length === 0) {
       return res.status(404).json({ error: "No activity data found" });
     }
