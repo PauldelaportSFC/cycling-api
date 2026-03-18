@@ -32,9 +32,6 @@ app.get("/fitness", async (req, res) => {
     );
 
     const activities = response.data;
-    console.log("🔥 RAW ACTIVITIES LENGTH:", activities.length);
-console.log("🔥 RAW ACTIVITIES LENGTH:", activities.length);
-    console.log("FIRST ACTIVITY:", activities[0]);
     
     if (!activities || activities.length === 0) {
       return res.status(404).json({ error: "No activity data found" });
@@ -60,15 +57,39 @@ console.log("🔥 RAW ACTIVITIES LENGTH:", activities.length);
     const tsb = ctl - atl;	
 
     res.json({
-      recent_rides: recent.length,
-      avg_tss: Math.round(avgTSS),
-      avg_power: Math.round(avgPower),
-      total_time_seconds: totalTime,
-      last_ride: latest.start_date_local,
-      ctl: Math.round(ctl),
-      atl: Math.round(atl),
-      tsb: Math.round(tsb)  
-    });
+  recent_rides: recent.length,
+
+  // LOAD + PERFORMANCE
+  avg_tss: Math.round(avgTSS),
+  avg_power: Math.round(avgPower),
+  total_time_seconds: totalTime,
+
+  // LAST RIDE
+  last_ride: latest.start_date_local,
+
+  // TRAINING STATE
+  ctl: Math.round(ctl),
+  atl: Math.round(atl),
+  tsb: Math.round(tsb),
+
+  // POWER / PERFORMANCE
+  ftp: latest.icu_ftp,
+  weighted_power: latest.icu_weighted_avg_watts,
+
+  // HEART RATE
+  avg_hr: latest.average_heartrate,
+  max_hr: latest.max_heartrate,
+  resting_hr: latest.icu_resting_hr,
+
+  // EFFICIENCY / FATIGUE SIGNALS
+  efficiency_factor: latest.icu_efficiency_factor,
+  decoupling: latest.decoupling,
+  power_hr_ratio: latest.icu_power_hr,
+
+  // VOLUME
+  ride_time: latest.moving_time,
+  distance: latest.distance
+});
 
   } catch (error) {
     console.error("Fitness error:", error.response?.data || error.message);
