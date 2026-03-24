@@ -42,7 +42,7 @@ app.get("/athlete/profile", async (req, res) => {
 
 app.get("/athlete/zones", async (req, res) => {
   try {
-    const response = await api.get(`/athlete/${ATHLETE}/power-zones`);
+    const response = await api.get(`/athlete/${ATHLETE}/sport-settings`);
     res.json(response.data);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch zones", details: error.response?.data || error.message });
