@@ -267,9 +267,91 @@ app.get("/events", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch events", details: error.response?.data || error.message });
   }
 });
+// ================================================================
+// POWER CURVE
+// ================================================================
 
+app.get("/athlete/powercurve", async (req, res) => {
+  try {
+    const oldest = req.query.oldest || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+    const newest = req.query.newest || new Date().toISOString().split("T")[0];
+    const response = await api.get(`/athlete/${ATHLETE}/power-curves?oldest=${oldest}&newest=${newest}&type=Ride,GravelRide,VirtualRide`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch power curve", details: error.response?.data || error.message });
+  }
+});
+
+// ================================================================
+// SINGLE EVENT BY ID
+// ================================================================
+
+app.get("/event/:id", async (req, res) => {
+  try {
+    const response = await api.get(`/athlete/${ATHLETE}/events/${req.params.id}`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch event", details: error.response?.data || error.message });
+  }
+});
+
+// ================================================================
+// SINGLE WELLNESS DAY BY DATE
+// ================================================================
+
+app.get("/wellness/:date", async (req, res) => {
+  try {
+    const response = await api.get(`/athlete/${ATHLETE}/wellness/${req.params.date}`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch wellness", details: error.response?.data || error.message });
+  }
+});
+
+// ================================================================
+// ACTIVITY STREAMS (second by second power, HR, cadence)
+// ================================================================
+
+app.get("/activity/:id/streams", async (req, res) => {
+  try {
+    const types = req.query.types || "watts,heartrate,cadence,altitude";
+    const response = await api.get(`/activity/${req.params.id}/streams?types=${types}`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch streams", details: error.response?.data || error.message });
+  }
+});
+
+// ================================================================
+// ATHLETE FITNESS HISTORY (historical CTL/ATL/TSB)
+// ================================================================
+
+app.get("/athlete/fitness", async (req, res) => {
+  try {
+    const oldest = req.query.oldest || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+    const newest = req.query.newest || new Date().toISOString().split("T")[0];
+    const response = await api.get(`/athlete/${ATHLETE}/wellness?oldest=${oldest}&newest=${newest}`);
+    const data = response.data;
+    const formatted = data.map(d => ({
+      date: d.id,
+      ctl: d.ctl,
+      atl: d.atl,
+      tsb: d.tsb,
+      weight: d.weight,
+      hrv: d.hrv
+    }));
+    res.json(formatted);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch fitness history", details: error.response?.data || error.message });
+  }
+});
 // ---- START SERVER ----
 app.listen(PORT, () => {
+  console.log(`  GET /athlete/powercurve`);
+  console.log(`  GET /athlete/fitness?oldest=YYYY-MM-DD&newest=YYYY-MM-DD`);
+  console.log(`  GET /event/:id`);
+  console.log(`  GET /wellness/:date`);
+  console.log(`  GET /activity/:id/streams`);  
   console.log(`Server running on port ${PORT}`);
   console.log(`Routes available:`);
   console.log(`  GET /athlete/profile`);
