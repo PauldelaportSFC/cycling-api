@@ -7,6 +7,11 @@ dotenv.config();
 
 const app = express();
 app.use(cors());
+app.use((req, res, next) => {
+  res.setHeader("X-Robots-Tag", "all");
+  res.setHeader("User-Agent", "allow");
+  next();
+});
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
@@ -25,7 +30,7 @@ const ATHLETE = process.env.ATHLETE_ID;
 // ---- ROBOTS.TXT ----
 app.get("/robots.txt", (req, res) => {
   res.type("text/plain");
-  res.send("User-agent: *\nAllow: /");
+  res.send("User-agent: *\nAllow: /\nDisallow:");
 });
 
 // ---- ROOT ----
