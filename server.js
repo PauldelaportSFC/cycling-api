@@ -151,7 +151,52 @@ app.get("/activity/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch activity", details: error.response?.data || error.message });
   }
 });
+// ---- ACTIVITY INTERVALS ----
+app.get("/activity/:id/intervals", async (req, res) => {
+  try {
+    const response = await api.get(`/activity/${req.params.id}/intervals`);
+    const data = response.data;
 
+    const workIntervals = data.icu_intervals
+      .filter(i => i.type === "WORK")
+      .map((i, idx) => ({
+        interval_number: idx + 1,
+        duration_secs: i.moving_time,
+        avg_power: Math.round(i.average_watts),
+        weighted_power: Math.round(i.weighted_average_watts),
+        max_power: Math.round(i.max_watts),
+        avg_hr: Math.round(i.average_heartrate),
+        max_hr: Math.round(i.max_heartrate),
+        avg_cadence: Math.round(i.average_cadence),
+        zone: i.zone,
+        intensity: i.intensity,
+        decoupling: i.decoupling,
+        wbal_start: i.wbal_start,
+        wbal_end: i.wbal_end,
+        joules_above_ftp: i.joules_above_ftp,
+        group_id: i.group_id
+      }));
+
+    const groups = data.icu_groups.map(g => ({
+      id: g.id,
+      count: g.count,
+      avg_power: Math.round(g.average_watts),
+      avg_hr: Math.round(g.average_heartrate),
+      max_hr: Math.round(g.max_heartrate),
+      zone: g.zone
+    }));
+
+    res.json({
+      activity_id: req.params.id,
+      work_intervals: workIntervals,
+      interval_groups: groups,
+      total_work_intervals: workIntervals.length
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch intervals", details: error.response?.data || error.message });
+  }
+});
 // ================================================================
 // WELLNESS & HEALTH METRICS
 // ================================================================
