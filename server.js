@@ -22,6 +22,12 @@ const api = axios.create({
 
 const ATHLETE = process.env.ATHLETE_ID;
 
+// ---- ROBOTS.TXT ----
+app.get("/robots.txt", (req, res) => {
+  res.type("text/plain");
+  res.send("User-agent: *\nAllow: /");
+});
+
 // ---- ROOT ----
 app.get("/", (req, res) => {
   res.send("Cycling API running");
